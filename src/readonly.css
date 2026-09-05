@@ -61,6 +61,16 @@
   padding: 34px 0 56px;
 }
 
+/* IMPORTANT: original booth CSS uses fixed card heights.
+   The read-only booth has more content, so all cards here must size to content. */
+.booth-readonly-main .booth-card {
+  box-sizing: border-box;
+  position: relative;
+  height: auto !important;
+  min-height: 0 !important;
+  overflow: visible !important;
+}
+
 .booth-readonly-heading {
   margin-bottom: 28px;
 }
@@ -73,12 +83,19 @@
   color: #6f7479;
 }
 
-.booth-readonly-lookup {
-  margin-bottom: 20px;
+.booth-readonly-main .booth-readonly-lookup {
+  height: auto !important;
+  min-height: 128px !important;
+  margin-top: 0;
+  margin-bottom: 24px;
 }
 
-.booth-readonly-participant {
-  padding-bottom: 26px;
+.booth-readonly-main .booth-readonly-participant {
+  height: auto !important;
+  min-height: 0 !important;
+  margin-top: 0;
+  padding: 22px 25px 28px;
+  overflow: visible !important;
 }
 
 .booth-readonly-person-row {
@@ -86,7 +103,7 @@
   justify-content: space-between;
   align-items: flex-start;
   gap: 24px;
-  margin-top: 8px;
+  margin-top: 10px;
 }
 
 .booth-readonly-person-name {
@@ -110,7 +127,7 @@
 }
 
 .booth-type-result {
-  margin-top: 22px;
+  margin-top: 24px;
   border-top: 1px solid #dfe3e5;
   border-bottom: 1px solid #dfe3e5;
   padding: 18px 0;
@@ -146,19 +163,24 @@
 }
 
 .booth-readonly-status-grid {
+  position: relative;
   display: grid;
   grid-template-columns: repeat(3, minmax(0, 1fr));
   gap: 12px;
-  margin-top: 18px;
+  margin-top: 20px;
+  margin-bottom: 0;
 }
 
 .booth-readonly-status-card {
+  box-sizing: border-box;
+  height: auto;
   min-height: 154px;
   border: 1.5px solid #1e2023;
   background: #fff;
-  padding: 18px 20px;
+  padding: 18px 20px 20px;
   display: flex;
   flex-direction: column;
+  overflow: hidden;
 }
 
 .booth-readonly-status-card.is-complete {
@@ -183,6 +205,7 @@
 .booth-status-card-head > strong {
   color: #17191c;
   font-size: 18px;
+  white-space: nowrap;
 }
 
 .booth-status-time {
@@ -200,7 +223,8 @@
 .booth-status-time > div {
   display: flex;
   align-items: baseline;
-  gap: 10px;
+  flex-wrap: wrap;
+  gap: 8px 10px;
 }
 
 .booth-status-time strong {
@@ -223,37 +247,44 @@
 }
 
 .booth-prize-name {
-  margin: 13px 0 -4px;
+  margin: 12px 0 0;
   color: #17191c;
   font-size: 16px;
   font-weight: 800;
 }
 
-.booth-readonly-operation {
-  margin-top: 20px;
+.booth-readonly-main .booth-readonly-operation {
+  height: auto !important;
+  min-height: 0 !important;
+  margin-top: 24px;
+  padding: 22px 25px 26px;
+  clear: both;
+  overflow: visible !important;
 }
 
 .booth-operation-grid {
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: 14px;
-  margin-top: 14px;
+  gap: 20px;
+  margin-top: 16px;
 }
 
 .booth-operation-grid > div {
+  min-width: 0;
   border-top: 2px solid #1d1f21;
   padding-top: 14px;
 }
 
 .booth-operation-grid .eyebrow {
   display: block;
-  margin-bottom: 8px;
+  margin: 0 0 8px;
 }
 
 .booth-operation-grid strong {
   display: block;
   color: #17191c;
   font-size: 16px;
+  line-height: 1.4;
   margin-bottom: 6px;
 }
 
