@@ -51,7 +51,7 @@ export async function logoutAdmin() {
 
 export async function lookupParticipant(studentId) {
   requireSupabase()
-  const { data, error } = await supabase.rpc('moca_admin_lookup_participant', {
+  const { data, error } = await supabase.rpc('moca_admin_lookup_participant_v2', {
     p_student_id: String(studentId || '').trim(),
   })
   if (error) throw error
@@ -60,29 +60,21 @@ export async function lookupParticipant(studentId) {
 
 export async function listParticipants(query = '') {
   requireSupabase()
-  const { data, error } = await supabase.rpc('moca_admin_list_participants', {
+  const { data, error } = await supabase.rpc('moca_admin_list_participants_v2', {
     p_query: String(query || '').trim(),
   })
   if (error) throw error
   return data || []
 }
 
-export async function markOfflineParticipation(studentId) {
-  requireSupabase()
-  const { data, error } = await supabase.rpc('moca_admin_mark_offline', {
-    p_student_id: String(studentId || '').trim(),
-  })
-  if (error) throw error
-  return unwrap(data)
+// 이전 App.jsx와의 호환성을 위해 export는 남겨두되,
+// 실제 DB 변경 권한은 Supabase에서 제거되어 있습니다.
+export async function markOfflineParticipation() {
+  throw new Error('오프라인 완료는 체험 사이트에서 자동으로 처리돼요.')
 }
 
-export async function cancelOfflineParticipation(studentId) {
-  requireSupabase()
-  const { data, error } = await supabase.rpc('moca_admin_cancel_offline', {
-    p_student_id: String(studentId || '').trim(),
-  })
-  if (error) throw error
-  return unwrap(data)
+export async function cancelOfflineParticipation() {
+  throw new Error('관리자 페이지에서는 오프라인 참여 상태를 변경할 수 없어요.')
 }
 
 export async function getDashboardStats() {
