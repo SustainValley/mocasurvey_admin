@@ -51,7 +51,7 @@ export async function logoutAdmin() {
 
 export async function lookupParticipant(studentId) {
   requireSupabase()
-  const { data, error } = await supabase.rpc('moca_admin_lookup_participant', {
+  const { data, error } = await supabase.rpc('moca_admin_lookup_participant_v2', {
     p_student_id: String(studentId || '').trim(),
   })
   if (error) throw error
@@ -60,29 +60,11 @@ export async function lookupParticipant(studentId) {
 
 export async function listParticipants(query = '') {
   requireSupabase()
-  const { data, error } = await supabase.rpc('moca_admin_list_participants', {
+  const { data, error } = await supabase.rpc('moca_admin_list_participants_v2', {
     p_query: String(query || '').trim(),
   })
   if (error) throw error
   return data || []
-}
-
-export async function markOfflineParticipation(studentId) {
-  requireSupabase()
-  const { data, error } = await supabase.rpc('moca_admin_mark_offline', {
-    p_student_id: String(studentId || '').trim(),
-  })
-  if (error) throw error
-  return unwrap(data)
-}
-
-export async function cancelOfflineParticipation(studentId) {
-  requireSupabase()
-  const { data, error } = await supabase.rpc('moca_admin_cancel_offline', {
-    p_student_id: String(studentId || '').trim(),
-  })
-  if (error) throw error
-  return unwrap(data)
 }
 
 export async function getDashboardStats() {
