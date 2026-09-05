@@ -5,16 +5,44 @@ import { lookupParticipant } from './adminStore'
 const STABLE_LOGO_URL =
   'https://raw.githubusercontent.com/SustainValley/mocasurvey-offline/main/public/assets/cafe-moca-logo.png'
 
-function formatTime(value) {
-  if (!value) return '-'
+// 온라인 설문 src/surveyData.js의 TYPE_META와 동일한 표기
+const TYPE_META = {
+  slow: { name: '슬로우 무드형' },
+  visual: { name: '디저트 비주얼형' },
+  story: { name: '운영자 서사형' },
+  archive: { name: '취향 아카이브형' },
+  expert: { name: '전문성형' },
+  event: { name: '경험 이벤트형' },
+}
+
+function getTypeName(value) {
+  if (!value) return '결과 없음'
+  return TYPE_META[value]?.name || value
+}
+
+function formatKst(value) {
+  if (!value) return { date: '-', time: '-' }
+
   try {
-    return new Intl.DateTimeFormat('ko-KR', {
-      dateStyle: 'short',
-      timeStyle: 'short',
+    const parts = new Intl.DateTimeFormat('ko-KR', {
       timeZone: 'Asia/Seoul',
-    }).format(new Date(value))
+      year: 'numeric',
+      month: '2-digit',
+      day: '2-digit',
+      hour: '2-digit',
+      minute: '2-digit',
+      hour12: false,
+      hourCycle: 'h23',
+    }).formatToParts(new Date(value))
+
+    const pick = (type) => parts.find((part) => part.type === type)?.value || ''
+
+    return {
+      date: `${pick('year')}.${pick('month')}.${pick('day')}`,
+      time: `${pick('hour')}:${pick('minute')}`,
+    }
   } catch {
-    return '-'
+    return { date: '-', time: '-' }
   }
 }
 
@@ -23,6 +51,24 @@ function StatusBadge({ ok, yes, no }) {
     <span className={`badge ${ok ? 'badge-green' : 'badge-pink'}`}>
       {ok ? yes : no}
     </span>
+  )
+}
+
+function TimeBlock({ value, emptyText = '기록 없음' }) {
+  if (!value) {
+    return <p className="booth-status-empty">{emptyText}</p>
+  }
+
+  const { date, time } = formatKst(value)
+
+  return (
+    <div className="booth-status-time">
+      <span>완료 시각</span>
+      <div>
+        <strong>{date}</strong>
+        <b>{time}</b>
+      </div>
+    </div>
   )
 }
 
@@ -58,15 +104,17 @@ function ReadonlyBoothPage() {
   const onlineComplete = participant?.surveyStatus === 'completed'
   const offlineComplete = Boolean(participant?.offlineParticipatedAt)
   const luckyComplete = Boolean(participant?.luckyDrawParticipated)
+  const primaryTypeName = getTypeName(participant?.primaryType)
+  const secondaryTypeName = getTypeName(participant?.secondaryType)
 
   return (
     <main className="booth-main booth-readonly-main">
-      <header className="booth-heading">
+      <header className="booth-heading booth-readonly-heading">
         <h1>부스 참여 확인</h1>
         <p>학번으로 온라인·오프라인·럭키드로우 상태를 한 번에 확인해요.</p>
       </header>
 
-      <section className="booth-card lookup-card">
+      <section className="booth-card lookup-card booth-readonly-lookup">
         <h2>01&nbsp;&nbsp;학번 조회</h2>
         <label>
           <span>학번</span>
@@ -87,43 +135,66 @@ function ReadonlyBoothPage() {
 
       {message && <p className="db-message">{message}</p>}
 
-      <section className={`booth-card participant-card ${participant ? '' : 'is-empty'}`}>
+      <section className={`booth-card participant-card booth-readonly-participant ${participant ? '' : 'is-empty'}`}>
         <h2>02&nbsp;&nbsp;참여자 상태</h2>
 
         {participant ? (
           <>
-            <div className="participant-top booth-readonly-badges">
-              <strong>{participant.name || '이름 없음'}</strong>
-              <StatusBadge ok={onlineComplete} yes="온라인 완료" no="온라인 미완료" />
-              <StatusBadge ok={offlineComplete} yes="오프라인 완료" no="오프라인 미완료" />
-              <StatusBadge ok={luckyComplete} yes="럭키드로우 완료" no="럭키드로우 전" />
+            <div className="booth-readonly-person-row">
+              <div>
+                <strong className="booth-readonly-person-name">{participant.name || '이름 없음'}</strong>
+                <p className="participant-meta">
+                  {participant.studentId}&nbsp;&nbsp;·&nbsp;&nbsp;{participant.department || '학과 미입력'}
+                </p>
+              </div>
+
+              <div className="participant-top booth-readonly-badges">
+                <StatusBadge ok={onlineComplete} yes="온라인 완료" no="온라인 미완료" />
+                <StatusBadge ok={offlineComplete} yes="오프라인 완료" no="오프라인 미완료" />
+                <StatusBadge ok={luckyComplete} yes="럭키드로우 완료" no="럭키드로우 전" />
+              </div>
             </div>
 
-            <p className="participant-meta">
-              {participant.studentId}&nbsp;&nbsp;·&nbsp;&nbsp;{participant.department || '학과 미입력'}
-            </p>
+            <div className="booth-type-result">
+              <span>온라인 설문 결과</span>
+              <div className="booth-type-copy">
+                <strong>{primaryTypeName}</strong>
+                <b>보조 유형 · {secondaryTypeName}</b>
+              </div>
+            </div>
 
             <div className="booth-readonly-status-grid">
-              <article className="booth-readonly-status-card">
-                <span>온라인 설문</span>
-                <strong>{participant.primaryType || '결과 없음'}</strong>
-                <small>{onlineComplete ? `완료 · ${formatTime(participant.completedAt)}` : '미완료'}</small>
+              <article className={`booth-readonly-status-card ${onlineComplete ? 'is-complete' : ''}`}>
+                <div className="booth-status-card-head">
+                  <span>온라인 설문</span>
+                  <strong>{onlineComplete ? '완료' : '미완료'}</strong>
+                </div>
+                <TimeBlock value={participant.completedAt} emptyText="온라인 설문 완료 기록 없음" />
               </article>
 
-              <article className="booth-readonly-status-card">
-                <span>오프라인 체험</span>
-                <strong>{offlineComplete ? '참여 완료' : '미완료'}</strong>
-                <small>{offlineComplete ? formatTime(participant.offlineParticipatedAt) : '6개 체험 완료 시 자동 반영'}</small>
+              <article className={`booth-readonly-status-card ${offlineComplete ? 'is-complete' : ''}`}>
+                <div className="booth-status-card-head">
+                  <span>오프라인 체험</span>
+                  <strong>{offlineComplete ? '완료' : '미완료'}</strong>
+                </div>
+                <TimeBlock
+                  value={participant.offlineParticipatedAt}
+                  emptyText="6개 체험 완료 시 자동 반영"
+                />
               </article>
 
-              <article className="booth-readonly-status-card">
-                <span>럭키드로우</span>
-                <strong>
-                  {luckyComplete
-                    ? `${participant.prizeRank || '-'}등 · ${participant.prizeName || '상품 기록 있음'}`
-                    : '참여 전'}
-                </strong>
-                <small>{luckyComplete ? formatTime(participant.luckyDrawnAt) : '온라인 + 오프라인 완료 후 참여 가능'}</small>
+              <article className={`booth-readonly-status-card ${luckyComplete ? 'is-complete' : ''}`}>
+                <div className="booth-status-card-head">
+                  <span>럭키드로우</span>
+                  <strong>{luckyComplete ? `${participant.prizeRank || '-'}등` : '참여 전'}</strong>
+                </div>
+                {luckyComplete && (
+                  <p className="booth-prize-name">{participant.prizeName || '상품 기록 있음'}</p>
+                )}
+                <TimeBlock
+                  value={participant.luckyDrawnAt}
+                  emptyText="온라인 + 오프라인 완료 후 참여 가능"
+                />
               </article>
             </div>
           </>
@@ -132,15 +203,20 @@ function ReadonlyBoothPage() {
         )}
       </section>
 
-      <section className="booth-card operation-card">
+      <section className="booth-card operation-card booth-readonly-operation">
         <h2>03&nbsp;&nbsp;운영진 확인</h2>
-        <span className="eyebrow">입장 시 확인</span>
-        <p className="guide-quote">“온라인 설문 완료 여부와 결과 유형을 확인해주세요.”</p>
-        <span className="eyebrow second">오프라인 완료</span>
-        <strong className="check-line">운영진 수동 처리 없음 · 체험 사이트에서 자동 저장</strong>
-        <p className="finish-note">
-          참가자가 6개 카페 체험을 모두 끝내면 DB의 오프라인 완료 상태가 자동으로 바뀝니다.
-        </p>
+        <div className="booth-operation-grid">
+          <div>
+            <span className="eyebrow">입장 시 확인</span>
+            <strong>온라인 완료 여부 · 결과 유형</strong>
+            <p>참여자가 온라인 설문을 완료했는지와 결과 유형을 확인해주세요.</p>
+          </div>
+          <div>
+            <span className="eyebrow">오프라인 완료</span>
+            <strong>운영진 수동 처리 없음</strong>
+            <p>6개 카페 체험을 끝내면 DB에 자동으로 완료 시각까지 저장돼요.</p>
+          </div>
+        </div>
       </section>
     </main>
   )
