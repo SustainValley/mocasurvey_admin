@@ -1,0 +1,771 @@
+/* =========================================================
+   CAFE MOCA ADMIN — tablet / mobile responsive layer
+   Imported after styles.css so the original visual language stays intact.
+   ========================================================= */
+
+html,
+body,
+#root {
+  max-width: 100%;
+  overflow-x: hidden;
+}
+
+img {
+  max-width: 100%;
+}
+
+/* Remove old desktop-only minimum widths that forced horizontal scrolling. */
+.metric-grid,
+.dashboard-grid,
+.analytics-button,
+.analytics-metric-grid,
+.analytics-result-grid,
+.analytics-detail-grid,
+.analytics-detail-card,
+.participant-search,
+.participant-table-header,
+.participant-table-row,
+.participants-table-card,
+.sponsor-stock-list,
+.sponsor-note,
+.run-flow,
+.run-step-list,
+.run-step,
+.run-detail-page,
+.run-detail-generic,
+.booth-card {
+  min-width: 0 !important;
+}
+
+/* ---------- Booth status + receipt ---------- */
+.booth-main-v2 {
+  overflow: visible !important;
+}
+
+.booth-lookup-v2,
+.booth-participant-v2,
+.booth-operation-v2 {
+  height: auto !important;
+  min-height: 0 !important;
+  overflow: visible !important;
+}
+
+.booth-lookup-v2 {
+  min-height: 128px !important;
+}
+
+.booth-participant-v2 {
+  padding: 20px 24px 26px;
+}
+
+.booth-person-head {
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 18px;
+  margin-top: 16px;
+}
+
+.booth-person-copy > strong {
+  display: block;
+  font-size: 22px;
+  line-height: 1.25;
+}
+
+.booth-person-copy .participant-meta {
+  margin-top: 6px;
+}
+
+.booth-status-badges {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+  gap: 8px;
+}
+
+.booth-status-badges .badge {
+  padding: 0 15px;
+}
+
+.booth-type-result {
+  display: grid;
+  grid-template-columns: 150px minmax(0, 1fr);
+  gap: 22px;
+  align-items: center;
+  margin-top: 22px;
+  padding: 16px 18px;
+  border: 1px solid #d9e0e2;
+  border-radius: 8px;
+  background: #fafbfb;
+}
+
+.booth-type-result > span {
+  color: #6e7378;
+  font-size: 11px;
+  font-weight: 700;
+}
+
+.booth-type-result > div {
+  display: flex;
+  align-items: baseline;
+  flex-wrap: wrap;
+  gap: 8px 18px;
+}
+
+.booth-type-result strong {
+  font-size: 18px;
+  line-height: 1.3;
+}
+
+.booth-type-result b {
+  color: #6e7378;
+  font-size: 11px;
+  font-weight: 700;
+}
+
+.receipt-match-card {
+  display: grid;
+  grid-template-columns: minmax(220px, .72fr) minmax(280px, 1fr);
+  gap: clamp(24px, 4vw, 54px);
+  align-items: center;
+  margin-top: 18px;
+  padding: clamp(20px, 3vw, 32px);
+  border: 1px solid #212426;
+  border-radius: 10px;
+  background: #fff;
+}
+
+.receipt-match-copy > span {
+  display: block;
+  color: #6e7378;
+  font-size: 11px;
+  font-weight: 700;
+}
+
+.receipt-match-copy > strong {
+  display: block;
+  margin-top: 10px;
+  font-size: clamp(22px, 2.5vw, 32px);
+  line-height: 1.2;
+}
+
+.receipt-match-copy > b {
+  display: block;
+  margin-top: 7px;
+  font-size: clamp(16px, 1.8vw, 22px);
+  line-height: 1.3;
+}
+
+.receipt-match-copy > p {
+  max-width: 390px;
+  margin: 18px 0 0;
+  color: #6e7378;
+  font-size: 12px;
+  line-height: 1.65;
+}
+
+.receipt-match-copy > a {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 38px;
+  margin-top: 18px;
+  padding: 0 14px;
+  border: 1px solid #d9e0e2;
+  border-radius: 6px;
+  color: #212426;
+  background: #fff;
+  font-size: 11px;
+  font-weight: 700;
+  text-decoration: none;
+}
+
+.receipt-preview-wrap {
+  display: grid;
+  place-items: center;
+  min-width: 0;
+  padding: 12px;
+  border-radius: 8px;
+  background: #f7f8f8;
+}
+
+.receipt-preview-wrap img {
+  display: block;
+  width: min(100%, 390px);
+  max-height: 620px;
+  object-fit: contain;
+  border: 1px solid rgba(33, 36, 38, .12);
+  background: #fff;
+}
+
+.booth-status-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 12px;
+  margin-top: 18px;
+}
+
+.booth-status-card {
+  min-width: 0;
+  min-height: 124px;
+  padding: 16px;
+  border: 1px solid #d9e0e2;
+  border-radius: 8px;
+  background: #fff;
+}
+
+.booth-status-card > span {
+  display: block;
+  color: #6e7378;
+  font-size: 10px;
+  font-weight: 700;
+}
+
+.booth-status-card > strong {
+  display: block;
+  margin-top: 9px;
+  font-size: 15px;
+  line-height: 1.4;
+  overflow-wrap: anywhere;
+}
+
+.booth-status-card > p {
+  margin: 16px 0 0;
+  color: #6e7378;
+  font-size: 10px;
+  line-height: 1.55;
+}
+
+.booth-operation-v2 {
+  padding: 20px 24px 24px;
+}
+
+.booth-operation-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 14px;
+  margin-top: 14px;
+}
+
+.booth-operation-grid > div {
+  min-width: 0;
+  padding: 16px 18px;
+  border: 1px solid #d9e0e2;
+  border-radius: 8px;
+  background: #fafbfb;
+}
+
+.booth-operation-grid .eyebrow {
+  margin-top: 0;
+}
+
+.booth-operation-grid strong {
+  display: block;
+  margin-top: 9px;
+  font-size: 13px;
+  line-height: 1.5;
+}
+
+.booth-operation-grid p {
+  margin: 9px 0 0;
+  color: #6e7378;
+  font-size: 11px;
+  line-height: 1.65;
+}
+
+/* ---------- Participants ---------- */
+.participants-table-v2 {
+  width: 100% !important;
+  height: auto !important;
+  min-height: 520px;
+  overflow: visible !important;
+}
+
+.participant-table-header-v2,
+.participant-table-row-v2 {
+  grid-template-columns: 1.1fr .85fr 1.35fr 1fr 1fr 1.25fr !important;
+  width: 100%;
+}
+
+.participant-table-row-v2 {
+  height: auto;
+  min-height: 76px;
+}
+
+.participant-type-name {
+  font-weight: 700;
+}
+
+/* ---------- Tablet ---------- */
+@media (max-width: 1024px) {
+  .metric-grid,
+  .analytics-metric-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+  }
+
+  .metric-card,
+  .analytics-metric-card {
+    width: 100% !important;
+  }
+
+  .dashboard-grid,
+  .analytics-result-grid {
+    grid-template-columns: 1fr !important;
+  }
+
+  .flow-card,
+  .memo-card,
+  .summary-card,
+  .analytics-result-card {
+    width: 100% !important;
+    height: auto !important;
+    min-height: 210px;
+  }
+
+  .progress-track {
+    width: 100% !important;
+  }
+
+  .analytics-button {
+    width: 100% !important;
+  }
+
+  .receipt-match-card {
+    grid-template-columns: minmax(190px, .72fr) minmax(250px, 1fr);
+    gap: 24px;
+  }
+
+  .receipt-preview-wrap img {
+    width: min(100%, 340px);
+  }
+
+  .participant-table-header-v2,
+  .participant-table-row-v2 {
+    grid-template-columns: 1.1fr .8fr 1.3fr .9fr .9fr 1.2fr !important;
+    font-size: 11px;
+  }
+}
+
+/* ---------- iPad portrait / phone navigation ---------- */
+@media (max-width: 860px) {
+  .admin-app-layout,
+  .admin-app-layout.sidebar-open,
+  .admin-app-layout.sidebar-closed {
+    --admin-sidebar-width: 0px !important;
+    min-width: 0;
+  }
+
+  .admin-app-content {
+    margin-left: 0 !important;
+    padding-top: 64px;
+  }
+
+  .global-sidebar,
+  .global-sidebar.is-collapsed,
+  .global-sidebar.is-open {
+    position: fixed;
+    inset: 0 0 auto 0;
+    width: 100% !important;
+    min-width: 0;
+    min-height: 0;
+    height: 64px;
+    border-right: 0;
+    border-bottom: 1px solid #e7eaeb;
+    background: #fff;
+    overflow: hidden;
+    box-shadow: 0 2px 10px rgba(33, 36, 38, .05);
+  }
+
+  .global-sidebar.is-open {
+    height: auto;
+    max-height: 100dvh;
+    overflow-y: auto;
+  }
+
+  .global-sidebar-top,
+  .global-sidebar.is-open .global-sidebar-top,
+  .global-sidebar.is-collapsed .global-sidebar-top {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+    width: 100%;
+    min-height: 64px;
+    height: 64px;
+    padding: 0 16px;
+  }
+
+  .global-sidebar-toggle,
+  .global-sidebar.is-open .global-sidebar-toggle,
+  .global-sidebar.is-collapsed .global-sidebar-toggle {
+    position: static;
+    order: 2;
+    width: 34px;
+    height: 34px;
+    margin: 0;
+    transform: none;
+  }
+
+  .global-sidebar-brand,
+  .global-sidebar.is-open .global-sidebar-brand {
+    display: block;
+  }
+
+  .global-sidebar-brand strong {
+    font-size: 17px;
+    line-height: 1.2;
+  }
+
+  .global-sidebar-brand span {
+    margin-top: 1px;
+    font-size: 9px;
+  }
+
+  .global-sidebar-mini-brand {
+    order: 1;
+    margin: 0;
+    font-size: 18px;
+  }
+
+  .global-sidebar.is-collapsed .global-sidebar-nav {
+    display: none !important;
+  }
+
+  .global-sidebar.is-open .global-sidebar-nav {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 8px;
+    width: 100%;
+    margin: 0;
+    padding: 10px 14px 18px;
+    background: #fff;
+  }
+
+  .global-sidebar.is-open .global-sidebar-item {
+    width: 100% !important;
+    height: 44px;
+    padding: 0 12px;
+  }
+
+  .admin-app-content .dashboard-main,
+  .admin-app-content .participants-main,
+  .admin-app-content .sponsor-main,
+  .admin-app-content .analytics-main,
+  .admin-app-content .run-main,
+  .admin-app-content .booth-main,
+  .admin-app-content .run-detail-content {
+    width: calc(100% - 32px) !important;
+    margin-left: 16px !important;
+    margin-right: 16px !important;
+    padding-top: 28px;
+  }
+
+  .booth-person-head {
+    display: block;
+  }
+
+  .booth-status-badges {
+    justify-content: flex-start;
+    margin-top: 14px;
+  }
+
+  .booth-type-result {
+    grid-template-columns: 130px minmax(0, 1fr);
+  }
+
+  .receipt-match-card {
+    grid-template-columns: minmax(180px, .7fr) minmax(230px, 1fr);
+  }
+
+  .booth-status-grid {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+
+  .participant-search {
+    grid-template-columns: minmax(0, 1fr) 130px !important;
+  }
+
+  .participant-search input,
+  .participant-search button {
+    width: 100% !important;
+  }
+
+  .participants-table-v2 {
+    min-height: 0;
+    padding: 14px;
+  }
+
+  .participant-table-header-v2 {
+    display: none !important;
+  }
+
+  .participant-table-body {
+    display: grid;
+    gap: 12px;
+    margin-top: 12px;
+  }
+
+  .participant-table-row-v2,
+  .participant-table-row-v2.is-alt {
+    display: grid !important;
+    grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+    gap: 14px 18px;
+    width: 100%;
+    min-width: 0 !important;
+    min-height: 0;
+    height: auto !important;
+    padding: 16px;
+    border: 1px solid #e1e5e6;
+    border-radius: 8px;
+    background: #fff;
+  }
+
+  .participant-table-row-v2 > [data-label] {
+    min-width: 0;
+  }
+
+  .participant-table-row-v2 > [data-label]::before {
+    content: attr(data-label);
+    display: block;
+    margin-bottom: 6px;
+    color: #8a8f93;
+    font-size: 9px;
+    line-height: 1.2;
+    font-weight: 700;
+  }
+
+  .participant-table-row-v2 .table-badge {
+    max-width: 100%;
+    min-width: 0;
+    height: auto;
+    min-height: 28px;
+    padding: 6px 10px;
+    text-align: center;
+    white-space: normal;
+  }
+
+  .run-workspace,
+  .run-workspace .run-step-list,
+  .run-workspace .run-step {
+    width: 100%;
+    min-width: 0 !important;
+  }
+}
+
+/* ---------- Phone ---------- */
+@media (max-width: 640px) {
+  .brand-panel {
+    padding: 26px 18px 22px;
+  }
+
+  .logo-card {
+    height: 170px;
+    border-radius: 12px;
+  }
+
+  .moca-logo {
+    width: min(250px, 82%);
+    height: auto;
+  }
+
+  .brand-copy {
+    margin-top: 18px;
+  }
+
+  .brand-copy h1 {
+    font-size: 24px;
+    line-height: 1.2;
+  }
+
+  .operator-note {
+    margin-top: 12px;
+  }
+
+  .form-panel {
+    padding: 34px 18px 48px;
+  }
+
+  .form-heading h2 {
+    font-size: 24px;
+    line-height: 1.25;
+  }
+
+  .field {
+    margin-top: 30px;
+  }
+
+  .field + .field {
+    margin-top: 18px;
+  }
+
+  .login-button {
+    margin-top: 28px;
+  }
+
+  .global-sidebar.is-open .global-sidebar-nav {
+    grid-template-columns: 1fr;
+  }
+
+  .admin-app-content .dashboard-main,
+  .admin-app-content .participants-main,
+  .admin-app-content .sponsor-main,
+  .admin-app-content .analytics-main,
+  .admin-app-content .run-main,
+  .admin-app-content .booth-main,
+  .admin-app-content .run-detail-content {
+    width: calc(100% - 24px) !important;
+    margin-left: 12px !important;
+    margin-right: 12px !important;
+    padding-top: 22px;
+    padding-bottom: 52px;
+  }
+
+  .dashboard-heading h1,
+  .participants-heading h1,
+  .sponsor-heading h1,
+  .analytics-heading h1,
+  .run-heading h1,
+  .booth-heading h1 {
+    font-size: 24px;
+    line-height: 1.25;
+  }
+
+  .metric-grid,
+  .analytics-metric-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+    gap: 10px !important;
+    margin-top: 24px;
+  }
+
+  .metric-card,
+  .analytics-metric-card {
+    height: auto !important;
+    min-height: 96px;
+    padding: 14px !important;
+  }
+
+  .metric-card p,
+  .analytics-metric-card span {
+    font-size: 11px;
+  }
+
+  .metric-card strong,
+  .analytics-metric-card strong {
+    font-size: 24px;
+    line-height: 1.2;
+  }
+
+  .dashboard-grid {
+    gap: 14px !important;
+  }
+
+  .lookup-card,
+  .booth-lookup-v2 {
+    min-height: 0 !important;
+    margin-top: 24px;
+    padding: 16px;
+  }
+
+  .lookup-card label {
+    margin: 10px 0 0;
+  }
+
+  .lookup-row,
+  .participant-search {
+    grid-template-columns: 1fr !important;
+    gap: 10px;
+  }
+
+  .lookup-row button,
+  .participant-search button {
+    width: 100% !important;
+  }
+
+  .booth-participant-v2,
+  .booth-operation-v2 {
+    padding: 16px;
+  }
+
+  .booth-person-copy > strong {
+    font-size: 20px;
+  }
+
+  .booth-status-badges {
+    gap: 6px;
+  }
+
+  .booth-status-badges .badge {
+    height: 28px;
+    padding: 0 11px;
+    font-size: 9px;
+  }
+
+  .booth-type-result {
+    grid-template-columns: 1fr;
+    gap: 8px;
+    padding: 14px;
+  }
+
+  .booth-type-result strong {
+    font-size: 17px;
+  }
+
+  .receipt-match-card {
+    grid-template-columns: 1fr;
+    gap: 18px;
+    padding: 16px;
+  }
+
+  .receipt-match-copy > p {
+    margin-top: 12px;
+  }
+
+  .receipt-preview-wrap {
+    padding: 8px;
+  }
+
+  .receipt-preview-wrap img {
+    width: min(100%, 330px);
+    max-height: none;
+  }
+
+  .booth-status-grid,
+  .booth-operation-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .booth-status-card {
+    min-height: 0;
+  }
+
+  .participant-table-row-v2,
+  .participant-table-row-v2.is-alt {
+    grid-template-columns: 1fr !important;
+    gap: 12px;
+  }
+
+  .sponsor-stock-card,
+  .sponsor-note,
+  .analytics-detail-card {
+    width: 100% !important;
+  }
+
+  .run-workspace .run-step {
+    grid-template-columns: 34px minmax(0, 1fr) 64px !important;
+    gap: 8px;
+  }
+
+  .run-workspace .run-step > p {
+    grid-column: 2 / 4;
+  }
+
+  .run-flow {
+    padding: 14px 16px;
+  }
+}
+
+@media (max-width: 390px) {
+  .metric-grid,
+  .analytics-metric-grid {
+    grid-template-columns: 1fr !important;
+  }
+}

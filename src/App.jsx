@@ -1,18 +1,77 @@
 import { useEffect, useState } from 'react'
 import {
-  cancelOfflineParticipation,
   getAdminSession,
   getDashboardStats,
   listParticipants,
   loginAdmin,
   lookupParticipant,
-  markOfflineParticipation,
 } from './adminStore'
 
 const FIGMA_LOGO_URL =
   'https://www.figma.com/api/mcp/asset/69c701a6-3bb3-4c94-be23-cd34f1da9a7a.svg'
 
 const navItems = ['대시보드', '부스 참여', '참여자', '협찬 재고', '행사 진행표', '성과 보기']
+
+const TYPE_META = {
+  expert: {
+    name: '전문성형',
+    receiptName: 'Coffee Nerd',
+    receiptImage: 'https://www.figma.com/api/mcp/asset/9c68c335-0a01-495f-b902-3ce1cfd97283.png',
+    figmaNode: '2461-806',
+  },
+  visual: {
+    name: '디저트 비주얼형',
+    receiptName: 'Dessert Lover',
+    receiptImage: 'https://www.figma.com/api/mcp/asset/6a6946f8-a4d2-4073-8554-39da89a0a17f.png',
+    figmaNode: '2461-935',
+  },
+  archive: {
+    name: '취향 아카이브형',
+    receiptName: 'Mood Seeker',
+    receiptImage: 'https://www.figma.com/api/mcp/asset/c729bb21-baf7-46cd-b46a-d5c77a296f87.png',
+    figmaNode: '2461-1018',
+  },
+  story: {
+    name: '운영자 서사형',
+    receiptName: 'Coffee in between',
+    receiptImage: 'https://www.figma.com/api/mcp/asset/b35a5fde-b4ab-4f52-abee-72f4cb3b40b6.png',
+    figmaNode: '2461-1307',
+  },
+  event: {
+    name: '경험 이벤트형',
+    receiptName: 'My kind of Place',
+    receiptImage: 'https://www.figma.com/api/mcp/asset/da79bdc9-ad11-463c-bf84-b514122da835.png',
+    figmaNode: '2461-1413',
+  },
+  slow: {
+    name: '슬로우 무드형',
+    receiptName: 'My Own Space',
+    receiptImage: 'https://www.figma.com/api/mcp/asset/1152c6ee-8b72-4895-8018-039cc86a5b32.png',
+    figmaNode: '2461-1532',
+  },
+}
+
+function getTypeName(type) {
+  if (!type) return '결과 없음'
+  return TYPE_META[type]?.name || type
+}
+
+function formatKst(value) {
+  if (!value) return '-'
+  try {
+    return new Intl.DateTimeFormat('ko-KR', {
+      timeZone: 'Asia/Seoul',
+      year: 'numeric',
+      month: '2-digit',
+      day: '2-digit',
+      hour: '2-digit',
+      minute: '2-digit',
+      hour12: false,
+    }).format(new Date(value))
+  } catch {
+    return '-'
+  }
+}
 
 function LoginPage({ onLogin }) {
   const [form, setForm] = useState({ id: '', password: '' })
@@ -256,10 +315,10 @@ function Dashboard({ onNavigate }) {
             <ul>
               <li>미루꾸 팔로우 안내</li>
               <li>담터 채널 안내</li>
-              <li>제품 지급 후 오프라인 완료 처리</li>
+              <li>오프라인 6개 체험 완료 시 DB 자동 반영</li>
             </ul>
             <button type="button" className="pink-action small" onClick={() => onNavigate('부스 참여')}>
-              <span>부스 참여 처리 열기</span>
+              <span>부스 참여 확인 열기</span>
             </button>
           </article>
         </section>
@@ -268,12 +327,12 @@ function Dashboard({ onNavigate }) {
           <article className="panel summary-card">
             <h3>온라인 설문 결과</h3>
             <p>온라인 설문 완료 데이터를 기준으로 자동 집계해요.</p>
-            <strong>대표 유형 {stats.topType || '-'} · {stats.topTypeCount || 0}명</strong>
+            <strong>대표 유형 {getTypeName(stats.topType)} · {stats.topTypeCount || 0}명</strong>
           </article>
 
           <article className="panel summary-card">
             <h3>오프라인 부스 결과</h3>
-            <p>온라인 설문 완료자 중 현장에서 완료 처리된 인원이에요.</p>
+            <p>온라인 설문 완료자 중 6개 오프라인 체험을 모두 마친 인원이에요.</p>
             <strong>오프라인 완료 {stats.offline}명</strong>
           </article>
         </section>
@@ -316,43 +375,8 @@ function BoothPage({ onNavigate }) {
       }
       setParticipant(data)
     } catch (error) {
-      setMessage(error.message)
-    } finally {
-      setLoading(false)
-    }
-  }
-
-  const complete = async () => {
-    if (!participant) return
-    setLoading(true)
-    setMessage('')
-    try {
-      const result = await markOfflineParticipation(participant.studentId)
-      if (result?.status === 'not_completed') {
-        setMessage('온라인 설문을 먼저 완료해야 해요.')
-        return
-      }
-      const refreshed = await lookupParticipant(participant.studentId)
-      setParticipant(refreshed)
-      setMessage(result?.status === 'already_participated' ? '이미 오프라인 완료 처리된 참여자예요.' : '오프라인 참여 완료 처리했어요.')
-    } catch (error) {
-      setMessage(error.message)
-    } finally {
-      setLoading(false)
-    }
-  }
-
-  const cancel = async () => {
-    if (!participant) return
-    setLoading(true)
-    setMessage('')
-    try {
-      await cancelOfflineParticipation(participant.studentId)
-      const refreshed = await lookupParticipant(participant.studentId)
-      setParticipant(refreshed)
-      setMessage('오프라인 참여 완료를 취소했어요.')
-    } catch (error) {
-      setMessage(error.message)
+      setParticipant(null)
+      setMessage(error?.message || '참여 기록을 불러오지 못했어요.')
     } finally {
       setLoading(false)
     }
@@ -360,18 +384,20 @@ function BoothPage({ onNavigate }) {
 
   const offlineComplete = Boolean(participant?.offlineParticipatedAt)
   const onlineComplete = participant?.surveyStatus === 'completed'
+  const luckyComplete = Boolean(participant?.luckyDrawParticipated)
+  const primaryType = TYPE_META[participant?.primaryType] || null
 
   return (
     <div className="booth-shell">
       <CompactRail onMenu={() => onNavigate('대시보드')} />
 
-      <main className="booth-main">
+      <main className="booth-main booth-main-v2">
         <header className="booth-heading">
-          <h1>부스 참여 처리</h1>
-          <p>온라인 설문과 같은 DB에서 학번을 조회하고 현장 완료를 기록해요.</p>
+          <h1>부스 참여 확인</h1>
+          <p>학번으로 온라인 유형과 참여 상태를 확인하고, 제공할 영수증까지 바로 확인해요.</p>
         </header>
 
-        <section className="booth-card lookup-card">
+        <section className="booth-card lookup-card booth-lookup-v2">
           <h2>01&nbsp;&nbsp;학번 조회</h2>
           <label>
             <span>학번</span>
@@ -381,6 +407,7 @@ function BoothPage({ onNavigate }) {
                 onChange={(e) => setStudentId(e.target.value)}
                 onKeyDown={(e) => e.key === 'Enter' && lookup()}
                 placeholder="2023XXXXXX"
+                inputMode="numeric"
               />
               <button type="button" onClick={lookup} disabled={loading}>
                 {loading ? '조회 중...' : '참여자 조회'}
@@ -391,30 +418,76 @@ function BoothPage({ onNavigate }) {
 
         {message && <p className="db-message">{message}</p>}
 
-        <section className={`booth-card participant-card ${participant ? '' : 'is-empty'}`}>
-          <h2>02&nbsp;&nbsp;참여자 확인</h2>
+        <section className={`booth-card participant-card booth-participant-v2 ${participant ? '' : 'is-empty'}`}>
+          <h2>02&nbsp;&nbsp;참여자 상태</h2>
 
           {participant ? (
             <>
-              <div className="participant-top">
-                <strong>{participant.name || '이름 없음'}</strong>
-                <span className={`badge ${onlineComplete ? 'badge-green' : 'badge-pink'}`}>
-                  {onlineComplete ? '온라인 완료' : '온라인 미완료'}
-                </span>
-                <span className={`badge ${offlineComplete ? 'badge-green' : 'badge-pink'}`}>
-                  {offlineComplete ? '현장 참여 완료' : '현장 미참여'}
-                </span>
+              <div className="participant-top booth-person-head">
+                <div className="booth-person-copy">
+                  <strong>{participant.name || '이름 없음'}</strong>
+                  <p className="participant-meta">
+                    {participant.studentId}&nbsp;&nbsp;·&nbsp;&nbsp;{participant.department || '학과 미입력'}
+                  </p>
+                </div>
+                <div className="booth-status-badges">
+                  <span className={`badge ${onlineComplete ? 'badge-green' : 'badge-pink'}`}>
+                    {onlineComplete ? '온라인 완료' : '온라인 미완료'}
+                  </span>
+                  <span className={`badge ${offlineComplete ? 'badge-green' : 'badge-pink'}`}>
+                    {offlineComplete ? '오프라인 완료' : '오프라인 미완료'}
+                  </span>
+                  <span className={`badge ${luckyComplete ? 'badge-green' : 'badge-pink'}`}>
+                    {luckyComplete ? '럭키드로우 완료' : '럭키드로우 전'}
+                  </span>
+                </div>
               </div>
 
-              <p className="participant-meta">
-                {participant.studentId}&nbsp;&nbsp;·&nbsp;&nbsp;{participant.department || '학과 미입력'}
-              </p>
+              <div className="booth-type-result">
+                <span>온라인 설문 결과</span>
+                <div>
+                  <strong>{getTypeName(participant.primaryType)}</strong>
+                  {participant.secondaryType && <b>보조 유형 · {getTypeName(participant.secondaryType)}</b>}
+                </div>
+              </div>
 
-              <div className="result-row">
-                <strong>온라인 결과&nbsp;&nbsp;{participant.primaryType || '결과 없음'}</strong>
-                <strong>
-                  오프라인 상태&nbsp;&nbsp;{offlineComplete ? '현장 참여 완료' : '현장 미참여'}
-                </strong>
+              {onlineComplete && primaryType && (
+                <section className={`receipt-match-card receipt-${participant.primaryType}`}>
+                  <div className="receipt-match-copy">
+                    <span>제공할 영수증</span>
+                    <strong>{primaryType.name}</strong>
+                    <b>{primaryType.receiptName}</b>
+                    <p>주 유형에 맞는 실제 영수증 디자인이에요. 참가자에게 같은 영수증을 제공해주세요.</p>
+                    <a
+                      href={`https://www.figma.com/design/qxhzdRnKh6isdZBbiXMLjX/Design_MOCA?node-id=${primaryType.figmaNode}`}
+                      target="_blank"
+                      rel="noreferrer"
+                    >
+                      Figma 원본 보기
+                    </a>
+                  </div>
+                  <div className="receipt-preview-wrap">
+                    <img src={primaryType.receiptImage} alt={`${primaryType.name} ${primaryType.receiptName} 영수증`} />
+                  </div>
+                </section>
+              )}
+
+              <div className="booth-status-grid">
+                <article className="booth-status-card">
+                  <span>온라인 설문</span>
+                  <strong>{onlineComplete ? '완료' : '미완료'}</strong>
+                  <p>{onlineComplete ? `완료 시각 · ${formatKst(participant.completedAt)}` : '온라인 설문 완료 기록 없음'}</p>
+                </article>
+                <article className="booth-status-card">
+                  <span>오프라인 체험</span>
+                  <strong>{offlineComplete ? '완료' : '미완료'}</strong>
+                  <p>{offlineComplete ? `완료 시각 · ${formatKst(participant.offlineParticipatedAt)}` : '6개 체험 완료 시 자동 반영'}</p>
+                </article>
+                <article className="booth-status-card">
+                  <span>럭키드로우</span>
+                  <strong>{luckyComplete ? `${participant.prizeRank || '-'}등 · ${participant.prizeName || '상품 확인'}` : '참여 전'}</strong>
+                  <p>{luckyComplete ? `완료 시각 · ${formatKst(participant.luckyDrawnAt)}` : '온라인 + 오프라인 완료 후 참여 가능'}</p>
+                </article>
               </div>
             </>
           ) : (
@@ -422,67 +495,10 @@ function BoothPage({ onNavigate }) {
           )}
         </section>
 
-        <section className="booth-card operation-card">
-          <h2>03&nbsp;&nbsp;현장 진행</h2>
-          <span className="eyebrow">참여 안내</span>
-          <p className="guide-quote">“온라인 결과 확인하셨죠? 현장 체험까지 완료하시면 협찬 제품을 받아가실 수 있어요!”</p>
-          <span className="eyebrow second">운영 시 확인</span>
-          <strong className="check-line">결과 화면 확인&nbsp;&nbsp;·&nbsp;&nbsp;협찬 안내&nbsp;&nbsp;·&nbsp;&nbsp;제품 지급</strong>
-          <p className="finish-note">모든 과정과 지급이 끝난 뒤 아래 버튼을 눌러주세요.</p>
-        </section>
-
-        <button
-          type="button"
-          className="booth-complete-button"
-          disabled={!participant || loading || !onlineComplete}
-          onClick={complete}
-        >
-          <span>{offlineComplete ? '오프라인 부스 참여 완료됨' : '오프라인 부스 참여 완료'}</span>
-        </button>
-
-        <button
-          type="button"
-          className="booth-cancel-button"
-          disabled={!participant || loading || !offlineComplete}
-          onClick={cancel}
-        >
-          오프라인 참여 취소
-        </button>
       </main>
     </div>
   )
 }
-
-const initialParticipants = [
-  {
-    studentId: '2023XXXXXX',
-    name: '박지현',
-    type: '취향 아카이브',
-    online: '온라인 완료',
-    offline: '오프라인 완료',
-  },
-  {
-    studentId: '2024XXXXXX',
-    name: '김모카',
-    type: '전문성형',
-    online: '온라인 완료',
-    offline: '미참여',
-  },
-  {
-    studentId: '2022XXXXXX',
-    name: '이카페',
-    type: '디저트 비주얼',
-    online: '온라인 완료',
-    offline: '오프라인 완료',
-  },
-  {
-    studentId: '2025XXXXXX',
-    name: '최라떼',
-    type: '운영자 서사',
-    online: '온라인 완료',
-    offline: '미참여',
-  },
-]
 
 function ParticipantsPage({ onNavigate }) {
   const [query, setQuery] = useState('')
@@ -497,7 +513,7 @@ function ParticipantsPage({ onNavigate }) {
       const rows = await listParticipants(search)
       setParticipants(rows)
     } catch (error) {
-      setMessage(error.message)
+      setMessage(error?.message || '참여자 목록을 불러오지 못했어요.')
     } finally {
       setLoading(false)
     }
@@ -507,15 +523,6 @@ function ParticipantsPage({ onNavigate }) {
     load('')
   }, [])
 
-  const cancelParticipation = async (studentId) => {
-    try {
-      await cancelOfflineParticipation(studentId)
-      await load(query)
-    } catch (error) {
-      setMessage(error.message)
-    }
-  }
-
   return (
     <div className="admin-shell">
       <Sidebar active="참여자" onNavigate={onNavigate} />
@@ -523,7 +530,7 @@ function ParticipantsPage({ onNavigate }) {
       <main className="participants-main">
         <header className="participants-heading">
           <h1>참여자</h1>
-          <p>온라인 설문과 동일한 참여자 DB를 검색하고 관리해요.</p>
+          <p>온라인·오프라인·럭키드로우 상태를 같은 DB에서 확인해요.</p>
         </header>
 
         <section className="participant-search" aria-label="참여자 검색">
@@ -539,31 +546,26 @@ function ParticipantsPage({ onNavigate }) {
 
         {message && <p className="db-message">{message}</p>}
 
-        <section className="participants-table-card">
+        <section className="participants-table-card participants-table-v2">
           <h2>참여자 목록</h2>
 
-          <div className="participant-table-header">
-            <span>학번</span><span>이름</span><span>유형</span><span>온라인</span><span>오프라인</span><span>관리</span>
+          <div className="participant-table-header participant-table-header-v2">
+            <span>학번</span><span>이름</span><span>유형</span><span>온라인</span><span>오프라인</span><span>럭키드로우</span>
           </div>
 
           <div className="participant-table-body">
             {participants.map((participant, index) => {
               const offline = Boolean(participant.offline_participated_at)
               const online = participant.survey_status === 'completed'
+              const lucky = Boolean(participant.lucky_draw_participated)
               return (
-                <div key={participant.student_id} className={`participant-table-row ${index % 2 === 1 ? 'is-alt' : ''}`}>
-                  <strong>{participant.student_id}</strong>
-                  <span>{participant.name || '-'}</span>
-                  <span>{participant.primary_type || '-'}</span>
-                  <div><span className={`table-badge ${online ? 'online-complete' : 'offline-pending'}`}>{online ? '온라인 완료' : '진행 중'}</span></div>
-                  <div><span className={`table-badge ${offline ? 'offline-complete' : 'offline-pending'}`}>{offline ? '오프라인 완료' : '미참여'}</span></div>
-                  <div>
-                    {offline && (
-                      <button type="button" className="cancel-participation" onClick={() => cancelParticipation(participant.student_id)}>
-                        참여 취소
-                      </button>
-                    )}
-                  </div>
+                <div key={participant.student_id} className={`participant-table-row participant-table-row-v2 ${index % 2 === 1 ? 'is-alt' : ''}`}>
+                  <strong data-label="학번">{participant.student_id}</strong>
+                  <span data-label="이름">{participant.name || '-'}</span>
+                  <span data-label="유형" className="participant-type-name">{getTypeName(participant.primary_type)}</span>
+                  <div data-label="온라인"><span className={`table-badge ${online ? 'online-complete' : 'offline-pending'}`}>{online ? '온라인 완료' : '진행 중'}</span></div>
+                  <div data-label="오프라인"><span className={`table-badge ${offline ? 'offline-complete' : 'offline-pending'}`}>{offline ? '오프라인 완료' : '미참여'}</span></div>
+                  <div data-label="럭키드로우"><span className={`table-badge ${lucky ? 'offline-complete' : 'offline-pending'}`}>{lucky ? `${participant.prize_rank || '-'}등 · ${participant.prize_name || '완료'}` : '참여 전'}</span></div>
                 </div>
               )
             })}
@@ -623,7 +625,7 @@ function SponsorPage({ onNavigate }) {
 
         <section className="sponsor-note">
           <h2>운영 메모</h2>
-          <p>제품을 실제 지급한 뒤 오프라인 참여 완료를 눌러야 재고 수량과 참여 인원이 함께 맞아요.</p>
+          <p>오프라인 6개 체험 완료 인원이 DB에 자동 반영되며, 이 수치를 기준으로 재고를 확인해요.</p>
         </section>
       </main>
     </div>
@@ -632,7 +634,7 @@ function SponsorPage({ onNavigate }) {
 
 const runOfShowSteps = [
   { no: '01', title: '오픈 준비', phase: '행사 전', desc: '기기·영수증·상품·협찬품 세팅' },
-  { no: '02', title: '온라인 결과 확인 · 영수증', phase: '참여 시작', desc: '학번 조회 후 유형 대조, 영수증 제공과 동시에 오프라인 완료', highlight: true },
+  { no: '02', title: '온라인 결과 확인 · 영수증', phase: '참여 시작', desc: '학번 조회 후 한국어 유형 확인, 유형에 맞는 영수증 제공', highlight: true },
   { no: '03', title: '키워드 맞추기 게임', phase: '체험 1', desc: '카페 SNS 피드에서 느껴지는 핵심 키워드 선택' },
   { no: '04', title: '카페 정보 우선순위', phase: '체험 2', desc: '게시물에서 먼저 보는 정보 약 8개를 중요도 순으로 정렬' },
   { no: '05', title: '럭키드로우', phase: '체험 3', desc: '1인 1회 추첨 후 등수 기록' },
@@ -691,19 +693,19 @@ function RunOfShowDetailPanel({ step, onClose }) {
     no: '02',
     title: '온라인 결과 확인 · 영수증',
     phase: '참여 시작',
-    purpose: '온라인 참여자와 현장 참여자를 학번으로 연결하고, 유형에 맞는 영수증을 전달하면서 오프라인 참여 완료를 기록합니다.',
+    purpose: '온라인 참여자를 학번으로 확인하고, 한국어 결과 유형에 맞는 영수증을 정확하게 전달합니다. 오프라인 완료는 6개 체험 종료 시 자동 기록됩니다.',
     steps: [
       '참여자에게 온라인 결과 화면을 보여달라고 안내',
       '학번만 입력해 온라인 참여 기록 조회',
       '서버에 표시된 유형과 참여자가 보여준 결과 유형을 빠르게 대조',
       '해당 유형의 영수증 출력·전달',
-      '영수증 전달과 동시에 ‘오프라인 부스 참여 완료’ 버튼 1회',
+      '오프라인 6개 체험을 모두 마치면 완료 상태가 자동 반영되는지 확인',
     ],
     scripts: [
       '“안녕하세요! 온라인 체험하신 결과 화면 한번 보여주시고, 학번만 말씀해주세요.”',
       '“확인됐어요! 결과에 맞는 영수증 먼저 드릴게요. 이어서 현장 체험 진행해주시면 됩니다 :)”',
     ],
-    checks: '학번 조회 성공 · 온라인 완료 여부 · 유형 일치 · 영수증 유형 · 완료 버튼 중복 클릭 금지',
+    checks: '학번 조회 성공 · 온라인 완료 여부 · 한국어 유형 일치 · 영수증 유형 일치 · 오프라인 완료 자동 반영',
   }
 
   const detail01 = {
@@ -787,7 +789,7 @@ function RunOfShowPage({ onNavigate }) {
       <section className="run-flow">
         <span>현장 기본 흐름</span>
         <strong>
-          학번 조회 → 결과 유형 확인 → 영수증 제공 + 오프라인 완료 → 게임 → 정보 순위 → 럭키드로우 → 상품·협찬 지급
+          학번 조회 → 한국어 결과 유형 확인 → 영수증 제공 → 오프라인 체험 → 완료 자동 반영 → 럭키드로우 → 상품·협찬 지급
         </strong>
       </section>
 
@@ -871,7 +873,7 @@ function AnalyticsPage({ onNavigate }) {
           <article className="analytics-result-card">
             <h2>온라인 설문 결과</h2>
             <span className="analytics-eyebrow">대표 유형</span>
-            <strong className="analytics-result-main">{stats.topType || '-'} · {stats.topTypeCount || 0}명</strong>
+            <strong className="analytics-result-main">{getTypeName(stats.topType)} · {stats.topTypeCount || 0}명</strong>
             <div className="analytics-result-list">
               <span>설문 완료 {stats.completed}명</span>
               <span>목표 {stats.target}명</span>
@@ -896,7 +898,7 @@ function AnalyticsPage({ onNavigate }) {
           <div className="analytics-detail-grid">
             <div><span>온라인 참여</span><strong>{stats.completed}명</strong></div>
             <div><span>오프라인 참여</span><strong>{stats.offline}명</strong></div>
-            <div><span>대표 유형</span><strong>{stats.topType || '-'}</strong></div>
+            <div><span>대표 유형</span><strong>{getTypeName(stats.topType)}</strong></div>
             <div><span>남은 제공</span><strong>{stats.remaining}명분</strong></div>
           </div>
           <p>온라인 설문과 현장 참여가 같은 학번 레코드로 연결되어 실시간으로 반영돼요.</p>
@@ -911,7 +913,7 @@ const runDetail02Steps = [
   '학번만 입력해 온라인 참여 기록 조회',
   '서버에 표시된 유형과 참여자가 보여준 결과 유형을 빠르게 대조',
   '해당 유형의 영수증 출력·전달',
-  '영수증 전달과 동시에 ‘오프라인 부스 참여 완료’ 버튼 1회',
+  '오프라인 6개 체험을 모두 마치면 완료 상태가 자동 반영되는지 확인',
 ]
 
 function RunDetail02({ onBack }) {
@@ -929,7 +931,7 @@ function RunDetail02({ onBack }) {
         <section className="run-purpose-card">
           <span>이 단계의 목적</span>
           <strong>
-            온라인 참여자와 현장 참여자를 학번으로 연결하고, 유형에 맞는 영수증을 전달하면서 오프라인 참여 완료를 기록합니다.
+            온라인 참여자를 학번으로 확인하고, 한국어 결과 유형에 맞는 영수증을 정확하게 전달합니다. 오프라인 완료는 6개 체험 종료 시 자동 기록됩니다.
           </strong>
         </section>
 
@@ -955,7 +957,7 @@ function RunDetail02({ onBack }) {
 
         <section className="run-check-card">
           <span>할 때 확인</span>
-          <strong>학번 조회 성공 · 온라인 완료 여부 · 유형 일치 · 영수증 유형 · 완료 버튼 중복 클릭 금지</strong>
+          <strong>학번 조회 성공 · 온라인 완료 여부 · 한국어 유형 일치 · 영수증 유형 일치 · 오프라인 완료 자동 반영</strong>
         </section>
 
         <button className="run-back-button" type="button" onClick={onBack}>
@@ -1138,15 +1140,27 @@ function RunDetailPage({ detail, onBack }) {
 
 export default function App() {
   const [page, setPage] = useState('login')
-  const [sidebarOpen, setSidebarOpen] = useState(true)
+  const [sidebarOpen, setSidebarOpen] = useState(() => typeof window === 'undefined' ? true : window.innerWidth > 860)
   const [checkingSession, setCheckingSession] = useState(true)
 
   useEffect(() => {
-    getAdminSession()
+    let active = true
+    const sessionTimeout = new Promise((resolve) => {
+      window.setTimeout(() => resolve(null), 3000)
+    })
+
+    Promise.race([getAdminSession().catch(() => null), sessionTimeout])
       .then((admin) => {
+        if (!active) return
         if (admin) setPage('dashboard')
       })
-      .finally(() => setCheckingSession(false))
+      .finally(() => {
+        if (active) setCheckingSession(false)
+      })
+
+    return () => {
+      active = false
+    }
   }, [])
 
   const navigate = (item) => {
@@ -1158,6 +1172,8 @@ export default function App() {
     else if (item === '성과 보기') setPage('analytics')
     else if (item === '상세02') setPage('runDetail02')
     else if (/^상세0[3-8]$/.test(item)) setPage(`runDetail${item.slice(-2)}`)
+
+    if (typeof window !== 'undefined' && window.innerWidth <= 860) setSidebarOpen(false)
   }
 
   if (checkingSession) {
