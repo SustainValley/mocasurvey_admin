@@ -73,3 +73,21 @@ export async function getDashboardStats() {
   if (error) throw error
   return unwrap(data)
 }
+
+export async function getEventAnalytics(period = 'all') {
+  requireSupabase()
+  const normalizedPeriod = period === 'today' ? 'today' : 'all'
+  const { data, error } = await supabase.rpc('moca_admin_event_analytics', {
+    p_period: normalizedPeriod,
+  })
+  if (error) throw error
+  return unwrap(data) || {
+    period: normalizedPeriod,
+    uniqueSessions: 0,
+    identifiedSessions: 0,
+    totalEvents: 0,
+    events: {},
+    pages: [],
+    recentEvents: [],
+  }
+}
