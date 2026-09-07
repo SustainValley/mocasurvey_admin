@@ -109,10 +109,10 @@ function replaceStaleCopy(root = document.body) {
 function mountGuide() {
   replaceStaleCopy()
 
-  const boothMain = document.querySelector('.booth-main-v2')
-  if (!boothMain || document.getElementById(GUIDE_ID)) return
+  const runMain = document.querySelector('.run-main-responsive')
+  if (!runMain || document.getElementById(GUIDE_ID)) return
 
-  const heading = boothMain.querySelector('.booth-heading')
+  const heading = runMain.querySelector('.run-heading')
   if (!heading) return
 
   heading.insertAdjacentHTML('afterend', guideMarkup)
