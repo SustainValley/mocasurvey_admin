@@ -41,6 +41,18 @@
   line-height: 1.6;
 }
 
+.moca-guide__head .moca-guide__supplies {
+  margin-top: 10px;
+  padding-top: 10px;
+  border-top: 1px dashed #dedede;
+  color: #444;
+  font-size: 13px;
+}
+
+.moca-guide__supplies strong {
+  color: #111;
+}
+
 .moca-guide__people {
   flex: 0 0 auto;
   padding: 7px 10px;
@@ -136,53 +148,8 @@
   word-break: keep-all;
 }
 
-.moca-guide__handoff {
-  margin: 14px 0 0;
-  padding-top: 13px;
-  border-top: 1px dashed #d9d9d9;
-  font-size: 12px;
-  line-height: 1.55;
-  color: #666;
-}
-
-.moca-guide__handoff strong {
-  color: #111;
-}
-
-.moca-guide__notes {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 10px;
-  margin-top: 14px;
-}
-
-.moca-guide__notes > div {
-  padding: 13px 14px;
-  border: 1px solid #e5e5e5;
-  background: #fafafa;
-}
-
-.moca-guide__notes span {
-  display: block;
-  margin-bottom: 4px;
-  font-size: 11px;
-  font-weight: 800;
-  color: #111;
-}
-
-.moca-guide__notes p {
-  margin: 0;
-  font-size: 12px;
-  line-height: 1.6;
-  color: #555;
-}
-
 @media (max-width: 1100px) {
   .moca-guide__grid {
-    grid-template-columns: 1fr;
-  }
-
-  .moca-guide__notes {
     grid-template-columns: 1fr;
   }
 }
