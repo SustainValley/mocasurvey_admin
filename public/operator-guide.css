@@ -1,8 +1,8 @@
 .moca-guide {
-  margin: 22px 0 26px;
-  border: 1px solid #e6e6e6;
+  margin: 22px 0 36px;
+  border: 1px solid #e2e2e2;
   background: #fff;
-  padding: 24px;
+  padding: 26px;
 }
 
 .moca-guide * {
@@ -13,8 +13,8 @@
   display: flex;
   align-items: flex-start;
   justify-content: space-between;
-  gap: 20px;
-  padding-bottom: 18px;
+  gap: 22px;
+  padding-bottom: 20px;
   border-bottom: 1px solid #ececec;
 }
 
@@ -29,7 +29,7 @@
 
 .moca-guide__head h2 {
   margin: 0;
-  font-size: 24px;
+  font-size: 26px;
   line-height: 1.25;
   color: #111;
 }
@@ -37,19 +37,24 @@
 .moca-guide__head p {
   margin: 8px 0 0;
   color: #666;
-  font-size: 14px;
+  font-size: 13px;
   line-height: 1.6;
 }
 
-.moca-guide__head .moca-guide__supplies {
-  margin-top: 10px;
-  padding-top: 10px;
-  border-top: 1px dashed #dedede;
-  color: #444;
-  font-size: 13px;
+.moca-guide__head .moca-guide__flow {
+  margin-top: 13px;
+  color: #333;
+  font-size: 14px;
 }
 
-.moca-guide__supplies strong {
+.moca-guide__head .moca-guide__supplies,
+.moca-guide__head .moca-guide__setup {
+  margin-top: 8px;
+  color: #555;
+  font-size: 12px;
+}
+
+.moca-guide__head strong {
   color: #111;
 }
 
@@ -81,6 +86,8 @@
   align-items: flex-start;
   gap: 12px;
   margin-bottom: 16px;
+  padding-bottom: 14px;
+  border-bottom: 1px solid #ededed;
 }
 
 .moca-guide__role > b {
@@ -94,9 +101,10 @@
   font-size: 12px;
 }
 
-.moca-guide__role span {
+.moca-guide__role span,
+.moca-guide__section > span {
   display: block;
-  margin-bottom: 3px;
+  margin-bottom: 4px;
   font-size: 11px;
   font-weight: 800;
   color: #888;
@@ -113,7 +121,7 @@
   margin: 0;
   padding-left: 19px;
   color: #333;
-  font-size: 13px;
+  font-size: 12px;
   line-height: 1.65;
 }
 
@@ -122,8 +130,8 @@
 }
 
 .moca-guide__script {
-  margin-top: 16px;
-  padding: 13px 14px;
+  margin-top: 15px;
+  padding: 12px 13px;
   background: #f7f7f7;
   border-left: 3px solid #111;
 }
@@ -135,29 +143,65 @@
 .moca-guide__script span {
   display: block;
   margin-bottom: 5px;
-  font-size: 11px;
+  font-size: 10px;
   font-weight: 800;
   color: #777;
 }
 
-.moca-guide__script p {
+.moca-guide__script p,
+.moca-guide__exception p,
+.moca-guide__mini p,
+.moca-guide__close p {
   margin: 0;
-  font-size: 12px;
+  font-size: 11px;
   line-height: 1.65;
-  color: #222;
+  color: #333;
   word-break: keep-all;
+}
+
+.moca-guide__exception,
+.moca-guide__mini,
+.moca-guide__close {
+  margin-top: 10px;
+  padding: 11px 12px;
+  border: 1px solid #e8e8e8;
+  background: #fcfcfc;
+}
+
+.moca-guide__exception strong,
+.moca-guide__mini strong,
+.moca-guide__close strong {
+  display: block;
+  margin-bottom: 4px;
+  font-size: 10px;
+  color: #111;
+}
+
+.moca-guide__close {
+  border-color: #d9d9d9;
 }
 
 @media (max-width: 1100px) {
   .moca-guide__grid {
     grid-template-columns: 1fr;
   }
+
+  .moca-guide__card ol {
+    font-size: 13px;
+  }
+
+  .moca-guide__script p,
+  .moca-guide__exception p,
+  .moca-guide__mini p,
+  .moca-guide__close p {
+    font-size: 12px;
+  }
 }
 
 @media (max-width: 640px) {
   .moca-guide {
     padding: 18px 14px;
-    margin: 16px 0 20px;
+    margin: 16px 0 24px;
   }
 
   .moca-guide__head {
